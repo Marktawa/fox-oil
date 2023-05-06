@@ -47,7 +47,7 @@ You will first set up and configure an S3 storage bucket for your app. Then, you
 
 By the end of this tutorial, you should be able to use the Amazon S3 Upload Provider Plugin with any Strapi project.
 
-## **What is Strapi?**
+## What is Strapi?
 
 [Strapi is the leading open-source headless Content Management System (CMS).](https://strapi.io/) It is 100% Javascript, based on [Node.js](https://nodejs.dev/), and used to build RESTful APIs and GraphQL. It also has a cloud SAAS, ☁ [Strapi Cloud](https://strapi.io/cloud) ☁ - a fully managed, composable, and collaborative platform to boost your content velocity!
 
@@ -56,11 +56,11 @@ Strapi enables developers to build projects faster by providing a customizable A
 A powerful feature of [Strapi](https://strapi.io/features) is its flexibility and extensibility. This is provided through plugins hosted on the [Strapi Market](https://market.strapi.io/). Plugins help add more functionality to your Strapi app. One of such features is uploading your media assets to a cloud provider using the Strapi dashboard.
 Sometimes, you may want to host your app's media files in a different location from where your Strapi app is hosted. This is useful to save on storage, memory, and compute resource usage. Also, you can leverage cloud-based solutions like Content Delivery Networks (CDN) and cloud storage buckets for faster and more reliable loading of your media assets.
 
-## **What is Amazon S3?**
+## What is Amazon S3?
 
 [Amazon AWS](https://aws.amazon.com/) is the biggest cloud provider. It offers [Amazon S3](https://aws.amazon.com/s3), a cloud storage service you can use to host your media assets. Amazon S3 is scalable, reliable, secure, and performant. The Strapi Team built an Amazon S3 Upload Provider Plugin to help with uploading your media assets to your S3 storage bucket.
 
-## **Prerequisites**
+## Prerequisites
 
 To follow along with this tutorial you need the following:
 
@@ -81,11 +81,11 @@ To follow along with this tutorial you need the following:
     - macOS Mojave or newer (ARM not supported)
     - Windows 10 or 11
     - Docker - [docker repo](https://github.com/strapi/strapi-docker)
-    - *I used Ubuntu 22.04 LTS for this tutorial.*
+    - *I used Ubuntu 20.04 LTS for this tutorial.*
 - **Node v14.x.x or v16.x.x or v18.x.x** (LTS Only)
-- Odd-number releases of Node are not supported (e.g. v13, v15). Download Node from the [Download | Node.js](https://nodejs.org/en/download/) page. *I used Node v18.14.0*
+- Odd-number releases of Node are not supported (e.g. v13, v15). Download Node from the [Download | Node.js](https://nodejs.org/en/download/) page. *I used Node v18.16.0*
 - **npm or yarn** *I used npm v8.5.0. npm ships with your Node installation.* If you prefer yarn, install it as an npm package. [Check Installation | Yarn](https://classic.yarnpkg.com/en/docs/install).
-- **Strapi v4.x.x** (*I used Strapi v4.7.1. You will install Strapi using `npm` or `yarn`.*)
+- **Strapi v4.x.x** (*I used Strapi v4.10.2. You will install Strapi using `npm` or `yarn`.*)
 - A text editor of your choice
 - Git for Version control [Download Git from the [Git - Downloads](https://git-scm.com/downloads) page]
 - **Git Bash (for Windows users)**
@@ -188,10 +188,9 @@ Creating a new user logs you into the Strapi Dashboard.
 
 ![Strapi Dashboard](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659961319101_strapi-dashboard.png)
 
-The left-hand side of the Strapi dashboard lists the **Content Manager** containing your content types. The **PLUGINS** option lists the plugins installed in your project. **Content-Type Builder** Plugin and **Media Library** Plugin are installed by default in your Strapi app. Select **Media Library** to see the image assets loaded with the blog template.
+The left-hand side of the Strapi dashboard lists the **Content Manager** containing your content types. The **PLUGINS** option lists the plugins installed in your project. **Content-Type Builder** Plugin and **Media Library** Plugin are installed by default in your Strapi app. 
 
 ![Media Library Upload Plugin](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659964038093_media-library-upload-plugin.png)
-
 
 The **Media Library** Plugin is what you will use to upload images to your Amazon S3 bucket. If the Amazon S3 Upload Provider Plugin is working, images you upload in the **Media Library** should appear in your S3 bucket automatically.
 
@@ -199,15 +198,17 @@ The **Media Library** Plugin is what you will use to upload images to your Amazo
 
 ### Install AWS S3 Provider
 
-Stop your strapi server by pressing `Ctrl` plus `C` in your terminal. Install `@strapi/provider-upload-aws-s3`:
+Stop your strapi server by pressing `Ctrl+C` in your terminal. Install `@strapi/provider-upload-aws-s3`:
 
 ```bash
+cd backend
 npm install @strapi/provider-upload-aws-s3 --save
 ```
 
 *OR*
 
 ```bash
+cd backend
 yarn add @strapi/provider-upload-aws-s3
 ```
 
@@ -233,6 +234,8 @@ module.exports = ({ env }) => ({
             secretAccessKey: env('AWS_ACCESS_SECRET'),
             region: env('AWS_REGION'),
             params: {
+              ACL: env('AWS_ACL', 'public-read'),
+              signedUrlExpires: env('AWS_SIGNED_URL_EXPIRES', 15 * 60),
               Bucket: env('AWS_BUCKET'),
             },
           },
@@ -248,7 +251,7 @@ module.exports = ({ env }) => ({
 
 This enables the plugin to work in your app. 
 
-`AWS_ACCESS_KEY_ID`, `AWS_ACCESS_SECRET`, `AWS_REGION` and `AWS_BUCKET` are environment variables. You will later assign their values in the `.env` file for your Strapi project after setting up the Amazon S3 bucket.
+`AWS_ACCESS_KEY_ID`, `AWS_ACCESS_SECRET`, `AWS_REGION`, `AWS_ACL`, `AWS_SIGNED_URL_EXPIRES`, and `AWS_BUCKET` are environment variables. You will later assign their values in the `.env` file for your Strapi project after setting up the Amazon S3 bucket.
 
 ### Security Middleware Configuration
 
@@ -303,16 +306,23 @@ module.exports = [
 
 Later you will replace `'yourBucketName.s3.yourRegion.amazonaws.com'` with the link to your S3 bucket. Refer to [AWS S3 | Strapi Market](https://market.strapi.io/providers/@strapi-provider-upload-aws-s3) for more information on configuring the plugin.
 
-## **Set up AWS**
+## Step 4: Set up AWS
 
 The next step here is to set up AWS as part of our project.
-**Create AWS Account**
+
+### Create AWS Account
+
 Sign up for an AWS account on the [AWS Console - Signup](https://portal.aws.amazon.com/billing/signup) page if you don’t have one already. Refer to the [Create and activate an AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/) guide for additional information related to the AWS account creation process.
-**Create Administrator IAM Admin User and Group**
+
+### Create Administrator IAM Admin User and Group**
+
 Best practices for using **AWS Amazon** services state to not use your root account user and to use instead the [IAM (AWS Identity and Access Management) service](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html). Your root user is therefore only used for a very few [select tasks](https://docs.aws.amazon.com/general/latest/gr/aws_tasks-that-require-root.html). For example, for **billing**, you create an **Administrator user and Group** for such things. Other routine tasks can also be done with a **regular IAM User**.
+
 Follow the “[Creating your first IAM admin user and user group - AWS Identity and Access Management](https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html)” guide to create an IAM admin user and user group using your AWS root account in the AWS Management Console.
-**Create an IAM User for your Strapi App**
-**A. Set User Details:**
+
+## Step 5: Create an IAM User for your Strapi App
+
+### Set User Details:
 
 - Sign out of your **root user** account and sign in to your **Administrator** user account you just created.
 ![Sign in as IAM Administrator user](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659989175854_image.png)
@@ -331,7 +341,10 @@ Follow the “[Creating your first IAM admin user and user group - AWS Identity 
 ![Set user details for Strapi Admin](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659991228325_image.png)
 
 
-**Set up Permissions for Amazon S3**
+## Step 6: Set up Permissions for Amazon S3
+
+### Create Group
+
 Follow the steps below to set up permissions for Amazon S3.
 
 - Click `Create group` and name it. Then, choose appropriate policies under **Policy Name**:
@@ -344,7 +357,7 @@ Follow the steps below to set up permissions for Amazon S3.
 - Click `Add user to group` and check the `Developers` group to add the new user.
 ![Check newly added user group](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659991688705_image.png)
 
-## **Add Tags**
+### Add Tags
 
 **This step is** optional **and based on your workflow and project scope.** To begin, click `Next: Review`.
 **Retrieve Credentials 'Access Key ID' and 'Secret Access Key'**
@@ -354,7 +367,8 @@ Review the information and ensure it is correct. Use `Previous` to correct anyth
 ![Review User Information](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659991936705_image.png)
 
 
-**B. Take note of the credentials related to your account:**
+### Take note of the credentials related to your account
+
 If you do not do these steps, you will have to reset your `Access key ID` and `Secret access key` later.
 
 - Download the `.csv` file and store it in a safe place. This contains the username, login link, access key ID and secret access key.
@@ -367,7 +381,7 @@ You can decide to keep these details in your password manager.
 
 For more information, check out [creating a regular user for the creation and management of your Strapi project](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/deployment/hosting-guides/amazon-aws.html#_2-next-create-a-regular-user-for-the-creation-and-management-of-your-strapi-project).
 
-## **Create Amazon S3 Storage Bucket**
+## Step 7: Create Amazon S3 Storage Bucket
 
 Log into `your AWS Management Console` as the new user you just created `Strapi-Admin`.
 
@@ -409,74 +423,88 @@ Leave the rest of the settings as is and click **Create bucket.** Your new bucke
 
 ![Newly created bucket listed in the console](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659994573996_image.png)
 
-## **Test Demo App**
+## Step 9: Update Strapi S3 Configuration
 
-The next stage involves testing the demo app.
-**Update Strapi Backend**
+### Update Environment variables
+
 Update your Strapi backend with new credentials from your newly created S3 bucket. Update `.env` with the following:
 
-    /* ~/strapi-aws-s3/backend/.env */
-    /* Add this after the last line */
-        
-        AWS_ACCESS_KEY_ID=<Access Key ID>
-        AWS_ACCESS_SECRET=<Secret access key>
-        AWS_REGION=eu-west-2
-        AWS_BUCKET=strapi-aws-s3-images-bucket
-> **NOTE:** Replace and with the credentials in the **.csv** file you downloaded after creating an IAM role for your S3 bucket. For AWS_REGION input the region where your bucket is hosted. My bucket is hosted at eu-west-2.
+```yml
+# ~/strapi-aws-s3/backend/.env */
+# Add this after the last line
+    
+AWS_ACCESS_KEY_ID=<Access Key ID>
+AWS_ACCESS_SECRET=<Secret access key>
+AWS_REGION=eu-west-2
+AWS_BUCKET=strapi-aws-s3-images-bucket
+```
+
+> **NOTE:** Replace the AWS credentials and with the credentials in the **.csv** file you downloaded after creating an IAM role for your S3 bucket. For AWS_REGION input the region where your bucket is hosted. My bucket is hosted at eu-west-2.
+
+### Update Middleware
 
 Update the `middlewares.js` file in your `config` folder by replacing `yourBucketName.s3.yourRegion.amazonaws.com` with the link to your S3 bucket. In my case the link becomes `strapi-aws-s3-images-bucket.s3.eu-west-2.amazonaws.com` like so:
 
-    // ~/strapi-aws-s3/backend/config/middlewares.js
-        
-        module.exports = [
-          'strapi::errors',
-          {
-            name: 'strapi::security',
-            config: {
-              contentSecurityPolicy: {
-                useDefaults: true,
-                directives: {
-                  'connect-src': ["'self'", 'https:'],
-                  'img-src': [
-                    "'self'",
-                    'data:',
-                    'blob:',
-                    'dl.airtable.com',
-                    'strapi-aws-s3-images-bucket.s3.eu-west-2.amazonaws.com', // change here
-                  ],
-                  'media-src': [
-                    "'self'",
-                    'data:',
-                    'blob:',
-                    'dl.airtable.com',
-                    'strapi-aws-s3-images-bucket.s3.eu-west-2.amazonaws.com', // change here
-                  ],
-                  upgradeInsecureRequests: null,
-                },
-              },
-            },
-          },
-          'strapi::cors',
-          'strapi::poweredBy',
-          'strapi::logger',
-          'strapi::query',
-          'strapi::body',
-          'strapi::session',
-          'strapi::favicon',
-          'strapi::public',
-        ];
+```js
+// ~/strapi-aws-s3/backend/config/middlewares.js
+
+module.exports = [
+  'strapi::errors',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': ["'self'", 'https:'],
+          'img-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'dl.airtable.com',
+            'strapi-aws-s3-images-bucket.s3.eu-west-2.amazonaws.com', // change here
+          ],
+          'media-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'dl.airtable.com',
+            'strapi-aws-s3-images-bucket.s3.eu-west-2.amazonaws.com', // change here
+          ],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  'strapi::cors',
+  'strapi::poweredBy',
+  'strapi::logger',
+  'strapi::query',
+  'strapi::body',
+  'strapi::session',
+  'strapi::favicon',
+  'strapi::public',
+];
+```
 
 Build your backend and start your server.
 
-        ~/strapi-aws-s3/backend $ npm run build
-        ~/strapi-aws-s3/backend $ npm run develop
-        
-        #OR
-        
-        ~/strapi-aws-s3/backend $ yarn build
-        ~/strapi-aws-s3/backend $ yarn develop
+```bash
+npm run build
+npm run develop
+```
 
-**Upload An Image**
+#OR
+
+```
+yarn build
+yarn develop
+```
+
+## Step 10: Test your Uploads
+
+### Upload An Image
+
 Visit the **Media Library** plugin page, [http://localhost:1337/admin/plugins/upload](http://localhost:1337/admin/plugins/upload). Click **+ Add new assets.** Browse for an image you want to add from your computer and select **Upload 1 asset to the library** and watch the magic happen.
 
 ![Upload image to Amazon S3 bucket using Strapi Admin](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659999588848_image.png)
@@ -491,8 +519,12 @@ Visit [https://s3.console.aws.amazon.com/s3/buckets/*](https://s3.console.aws.am
 
 ![Newly Uploaded Image in Amazon S3 Bucket](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1660000098245_image.png)
 
+### Access Image using public AWS URL
 
-**Delete an Image**
+Copy the URL to one of the images you uploaded.
+
+### Delete an Image
+
 Delete the image from the Media Library. The image is automatically deleted form the Amazon S3 bucket.
 
 ![Delete image in Strapi Admin Dashboard](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1660000691700_image.png)
@@ -505,13 +537,18 @@ Confirm the deletion by refreshing the link to your bucket. The bucket is now em
 
 You have successfully set up the Amazon S3 Upload Provider Plugin.
 
-## **Conclusion**
+## Conclusion
 
 In this tutorial, we created a Strapi project from a blog template. With just one command, our backend was already set as a REST API endpoint.
+
 We installed and configured the **AWS S3 provider for Strapi uploads** (`@strapi/provider-upload-aws-s3`) plugin in our Strapi project folder. Then, we created an Amazon S3 bucket with the recommended IAM policies to manage it.
+
 Finally, we tested our app and saw the ease with which we can upload and delete images in the Amazon S3 bucket using the Strapi Admin Media Library. Check out [the Github project repo](https://github.com/syboxdigital/strapi-aws-s3).
-**What Next?**
+
+### What Next?
+
 Check out [Deploying Strapi to your own VPS](https://strapi.io/blog/deploying-strapi-to-your-own-vps) and other [deployment options](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/deployment.html) to see how you can deploy your app. If you are interested in building a frontend for this app checkout [Build a blog with Next (React.js) and Strapi](https://strapi.io/blog/build-a-blog-with-next-react-js-strapi).
+
 I hope this tutorial has provided enough information and insight to help you set up the Amazon S3 provider with full confidence. If you have any issues, feel free to comment. The Strapi community is always available for any issues.
 
 
