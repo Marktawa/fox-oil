@@ -360,18 +360,16 @@ Follow the steps below to set up permissions for Amazon S3.
 ### Add Tags
 
 **This step is** optional **and based on your workflow and project scope.** To begin, click `Next: Review`.
-**Retrieve Credentials 'Access Key ID' and 'Secret Access Key'**
-**A. Review:**
+
+### Retrieve Credentials 'Access Key ID' and 'Secret Access Key'**
+
 Review the information and ensure it is correct. Use `Previous` to correct anything. If satisfied, click `Create user`.
 
 ![Review User Information](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659991936705_image.png)
 
-
-### Take note of the credentials related to your account
-
 If you do not do these steps, you will have to reset your `Access key ID` and `Secret access key` later.
 
-- Download the `.csv` file and store it in a safe place. This contains the username, login link, access key ID and secret access key.
+Download the `.csv` file and store it in a safe place. This contains the username, login link, access key ID and secret access key.
 
 You can decide to keep these details in your password manager.
 
@@ -505,7 +503,7 @@ yarn develop
 
 ### Upload An Image
 
-Visit the **Media Library** plugin page, [http://localhost:1337/admin/plugins/upload](http://localhost:1337/admin/plugins/upload). Click **+ Add new assets.** Browse for an image you want to add from your computer and select **Upload 1 asset to the library** and watch the magic happen.
+Visit the **Media Library** plugin page, [http://localhost:1337/admin/plugins/upload](http://localhost:1337/admin/plugins/upload). Click **+ Add new assets.** Browse for an image you want to add from your computer and select **Upload 1 asset to the library**.
 
 ![Upload image to Amazon S3 bucket using Strapi Admin](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1659999588848_image.png)
 
@@ -519,13 +517,10 @@ Visit [https://s3.console.aws.amazon.com/s3/buckets/*](https://s3.console.aws.am
 
 ![Newly Uploaded Image in Amazon S3 Bucket](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1660000098245_image.png)
 
-### Access Image using public AWS URL
-
-Copy the URL to one of the images you uploaded.
 
 ### Delete an Image
 
-Delete the image from the Media Library. The image is automatically deleted form the Amazon S3 bucket.
+Delete the image from the Media Library. The image is automatically deleted from the Amazon S3 bucket.
 
 ![Delete image in Strapi Admin Dashboard](https://paper-attachments.dropboxusercontent.com/s_DEA65C6CE85B8B99CB1CC70F901A2EB93FDCEBD4ABE886AF7F3FCEA073868233_1660000691700_image.png)
 
@@ -539,15 +534,9 @@ You have successfully set up the Amazon S3 Upload Provider Plugin.
 
 ## Conclusion
 
-In this tutorial, we created a Strapi project from a blog template. With just one command, our backend was already set as a REST API endpoint.
-
-We installed and configured the **AWS S3 provider for Strapi uploads** (`@strapi/provider-upload-aws-s3`) plugin in our Strapi project folder. Then, we created an Amazon S3 bucket with the recommended IAM policies to manage it.
+In this tutorial, we created a Strapi project then installed and configured the **AWS S3 provider for Strapi uploads** (`@strapi/provider-upload-aws-s3`) plugin in our Strapi project folder. We then created an Amazon S3 bucket with the recommended IAM policies to manage it.
 
 Finally, we tested our app and saw the ease with which we can upload and delete images in the Amazon S3 bucket using the Strapi Admin Media Library. Check out [the Github project repo](https://github.com/syboxdigital/strapi-aws-s3).
-
-### What Next?
-
-Check out [Deploying Strapi to your own VPS](https://strapi.io/blog/deploying-strapi-to-your-own-vps) and other [deployment options](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/deployment.html) to see how you can deploy your app. If you are interested in building a frontend for this app checkout [Build a blog with Next (React.js) and Strapi](https://strapi.io/blog/build-a-blog-with-next-react-js-strapi).
 
 I hope this tutorial has provided enough information and insight to help you set up the Amazon S3 provider with full confidence. If you have any issues, feel free to comment. The Strapi community is always available for any issues.
 
